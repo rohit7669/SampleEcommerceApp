@@ -1,19 +1,22 @@
-# Stage 1: Build the app using .NET 8 SDK Alpine image
+# -------------------------
+# Build stage
+# -------------------------
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
-WORKDIR /app
+WORKDIR /src
 
-COPY *.csproj ./
-RUN dotnet restore
+# Copy csproj and restore
+COPY Backend/*.csproj Backend/
+RUN dotnet restore Backend/Backend.csproj
 
-COPY . ./
-RUN dotnet publish -c Release -o out
+# Copy everything else
+COPY . .
+WORKDIR /src/Backend
+RUN dotnet publish -c Release -o /app/publish
 
-# Stage 2: Use ASP.NET Core runtime Alpine image
+# -------------------------
+# Runtime stage
+# -------------------------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
-
-COPY --from=build /app/out .
-
-EXPOSE 5000
-
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Backend.dll"]
