@@ -1,0 +1,35 @@
+<button (click)="createNewProduct()" > Create </button>
+<button (click)="onShowDetail(0)" > Fetalle not found </button>
+
+<div class="products--grid">
+  <app-product
+    *ngFor="let p of products"
+    [product]="p"
+    (showProduct)="onShowDetail($event)"
+    (addedProduct)="onAddToShoppiongCart($event)"
+    ></app-product>
+    <button (click)="loadMore()">Load More</button>
+</div>
+
+<div class="product-detail" [class.active]="showProductDetail">
+    {{statusDetail}}
+
+  <div *ngIf="productChosen">
+    <button (click)="toggleProductDetail()">Close</button>
+    <h1>{{productChosen.title}}</h1>
+    <!--  -->
+    <swiper-container
+    slides-per-view="1"
+    mousewheel-force-to-axis="true"
+  >
+    <swiper-slide >
+      <img height="100" [src]="productChosen.images[0]" alt=""></swiper-slide>
+  </swiper-container>
+    <!--  -->
+
+    <p>{{productChosen.description}}</p>
+    <button (click)="updateProduct()">Editar</button>
+    <button (click)="deleteProduct()">Delete</button>
+  </div>
+</div>
+

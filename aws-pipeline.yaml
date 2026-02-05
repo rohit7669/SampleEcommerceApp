@@ -1,0 +1,59 @@
+name: Sample Project CI pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      -main
+
+jobs:
+  build:
+    name: Bild nad test
+    runs-on: ubuntu-latest
+
+    steps:
+      #checkout  source code
+      - name: Checkout repository
+        uses: actions/Checkout@v4
+
+      # steps for backend code
+
+      - name: Setup .Net 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x 
+
+      - name: Restore backend dependencies
+        working-directory: Backend
+        run: dotnet restore
+
+      - name: Build backend
+        working-directory: Backend
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run backend tests
+        working-directory: Backend
+        run: dotnet test --configuration Release --no-build
+
+
+        # setup for frontend
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Build Angular application
+        working-directory: Frontend
+        run: npm run build -- --configuration production
+
+
+
