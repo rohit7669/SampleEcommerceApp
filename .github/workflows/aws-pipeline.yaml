@@ -55,5 +55,41 @@ jobs:
         working-directory: Frontend
         run: npm run build -- --configuration production
 
+      # --------------------
+      # Docker Login
+      # --------------------
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PWD }}" | docker login \
+            -u "${{ secrets.DOCKER_USERNAME }}" \
+            --password-stdin
+
+      # --------------------
+      # Docker Build
+      # --------------------
+      - name: Build Backend Docker image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/sampleecommerce-backend:latest \
+            -f Backend/Backend/Dockerfile \
+            Backend
+
+      - name: Build Frontend Docker image
+        run: |
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/sampleecommerce-frontend:latest \
+            -f Frontend/Dockerfile \
+            Frontend
+
+      # --------------------
+      # Docker Push
+      # --------------------
+      - name: Push Backend Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/sampleecommerce-backend:latest
+
+      - name: Push Frontend Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/sampleecommerce-frontend:latest
 
 
